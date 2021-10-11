@@ -1,7 +1,7 @@
 """
 Copyright (c) Microsoft Corporation.
 Licensed under the MIT license.
-
+start to add comments to METRO model
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -22,7 +22,7 @@ class METRO_Encoder(BertPreTrainedModel):
         self.encoder = BertEncoder(config)
         self.pooler = BertPooler(config)
         self.position_embeddings = nn.Embedding(config.max_position_embeddings, config.hidden_size)
-        self.img_dim = config.img_feature_dim 
+        self.img_dim = config.img_feature_dim
 
         try:
             self.use_img_layernorm = config.use_img_layernorm
@@ -152,7 +152,7 @@ class METRO_Hand_Network(torch.nn.Module):
         self.trans_encoder = trans_encoder
         self.upsampling = torch.nn.Linear(195, 778)
         self.cam_param_fc = torch.nn.Linear(3, 1)
-        self.cam_param_fc2 = torch.nn.Linear(195+21, 150) 
+        self.cam_param_fc2 = torch.nn.Linear(195+21, 150)
         self.cam_param_fc3 = torch.nn.Linear(150, 3)
 
     def forward(self, images, mesh_model, mesh_sampler, meta_masks=None, is_train=False):
@@ -190,7 +190,7 @@ class METRO_Hand_Network(torch.nn.Module):
             # meta_masks is a tensor of all the masks, randomly generated in dataloader
             # we pre-define a [MASK] token, which is a floating-value vector with 0.01s
             constant_tensor = torch.ones_like(features).cuda()*0.01
-            features = features*meta_masks + constant_tensor*(1-meta_masks)     
+            features = features*meta_masks + constant_tensor*(1-meta_masks)
 
         # forward pass
         if self.config.output_attentions==True:
@@ -248,7 +248,7 @@ class METRO_Body_Network(torch.nn.Module):
         template_vertices_sub = mesh_sampler.downsample(template_vertices)
         template_vertices_sub2 = mesh_sampler.downsample(template_vertices_sub, n1=1, n2=2)
 
-        # template mesh-to-joint regression 
+        # template mesh-to-joint regression
         template_3d_joints = smpl.get_h36m_joints(template_vertices)
         template_pelvis = template_3d_joints[:,cfg.H36M_J17_NAME.index('Pelvis'),:]
         template_3d_joints = template_3d_joints[:,cfg.H36M_J17_TO_J14,:]
@@ -277,7 +277,7 @@ class METRO_Body_Network(torch.nn.Module):
             # meta_masks is a tensor of all the masks, randomly generated in dataloader
             # we pre-define a [MASK] token, which is a floating-value vector with 0.01s
             constant_tensor = torch.ones_like(features).cuda(self.config.device)*0.01
-            features = features*meta_masks + constant_tensor*(1-meta_masks)            
+            features = features*meta_masks + constant_tensor*(1-meta_masks)
 
         # forward pass
         if self.config.output_attentions==True:
@@ -305,4 +305,4 @@ class METRO_Body_Network(torch.nn.Module):
         if self.config.output_attentions==True:
             return cam_param, pred_3d_joints, pred_vertices_sub2, pred_vertices_sub, pred_vertices_full, hidden_states, att
         else:
-            return cam_param, pred_3d_joints, pred_vertices_sub2, pred_vertices_sub, pred_vertices_full 
+            return cam_param, pred_3d_joints, pred_vertices_sub2, pred_vertices_sub, pred_vertices_full
